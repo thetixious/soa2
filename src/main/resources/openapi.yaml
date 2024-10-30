@@ -1,5 +1,5 @@
 openapi: "3.0.0"
-info: 
+info:
   version: "1.0.0"
   title: "LAB 1"
 
@@ -25,23 +25,23 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: 
+            schema:
               $ref: '#/components/schemas/Ticket'
       responses:
-        "200": 
+        "200":
           description: Создание произошло успешно
         "400":
           description: Ошибка во входных данных
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: '#/components/schemas/ErrorMessage'
               examples:
                 response:
                   value:
                     code: "400"
                     message: "Validation Failed"
-                    
+
     get:
       summary: Получить список билетов
       description: Получение списка объектов типа Ticket
@@ -50,7 +50,7 @@ paths:
       parameters:
         - name: sort
           in: query
-          description: | 
+          description: |
             Параметры для сортировки по полям объекта Ticket 
             - суффикс **.asc** - по возрастанию
             - суффикс **.des** - по убыванию
@@ -74,7 +74,7 @@ paths:
         - name: filter
           in: query
           required: false
-          description: | 
+          description: |
             Параметры для фильтрации. Допустимые параметры:
               - gt
               - eq
@@ -97,18 +97,18 @@ paths:
             type: integer
             default: 0
             minimum: 0
-      
+
       responses:
         '200':
           description: Returns an array of flats based on the specified parameters
-          
+
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/TicketForComplexResponse'
-        
+
         "400":
           description: Ошибка во входных данных
           content:
@@ -120,7 +120,7 @@ paths:
                   value:
                     code: "400"
                     message: "Validation Failed"
-                
+
   /tickets/{id}:
     put:
       tags:
@@ -136,9 +136,9 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: 
+            schema:
               $ref: '#/components/schemas/Ticket'
-              
+
       parameters:
         - description: Идентификатор элемента
           in: path
@@ -156,7 +156,7 @@ paths:
           description: Ошибка во входных данных
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: '#/components/schemas/ErrorMessage'
               examples:
                 response:
@@ -167,7 +167,7 @@ paths:
           description: Билет не найден
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: '#/components/schemas/ErrorMessage'
               examples:
                 response:
@@ -179,8 +179,8 @@ paths:
         - Main task
       summary: Удалить существующий билет по id
       description:
-        Удаление объекта Ticket по его id 
-        
+        Удаление объекта Ticket по его id
+
       parameters:
         - description: Идентификатор элемента
           in: path
@@ -197,7 +197,7 @@ paths:
           description: Ошибка во входных данных
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: '#/components/schemas/ErrorMessage'
               examples:
                 response:
@@ -208,16 +208,16 @@ paths:
           description: Билет не найден
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: '#/components/schemas/ErrorMessage'
               examples:
                 response:
                   value:
                     code: "404"
                     message: "Ticket not found"
-    
+
     get:
-      tags: 
+      tags:
         - Main task
       parameters:
         - description: Идентификатор элемента
@@ -230,7 +230,7 @@ paths:
           example: 1
       summary: Получить билет по id
       description: Получение объекта Ticket по id
-      
+
       responses:
         "200":
           description: Запрос выполнен успешно
@@ -238,18 +238,18 @@ paths:
           description: Билет не найден
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: '#/components/schemas/ErrorMessage'
               examples:
                 response:
                   value:
                     code: "400"
                     message: "Validation Failed"
-  
+
   /tickets/{price}:
     delete:
-      tags: 
-        - Additional task 
+      tags:
+        - Additional task
       summary: Удалить билет с данной ценой
       description: |
         Удаление одного объекта Ticket, значение поля price которого равен данному
@@ -262,7 +262,7 @@ paths:
             type: integer
             format: id
           example: 350
-          
+
       responses:
         "200":
           description: Запрос выполнен успешно. Возвращается удаленный объект
@@ -270,22 +270,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TicketForResponse'
-          
+
         "404":
           description: Билет не найден
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: '#/components/schemas/ErrorMessage'
               examples:
                 response:
                   value:
                     code: "404"
                     message: "Ticket not found"
-                    
+
     get:
-      tags: 
-        - Additional task 
+      tags:
+        - Additional task
       summary: Получить количество билетов с данной ценой
       description: |
         Получение количества объектов, значение поля price которых равно заданному.
@@ -298,7 +298,7 @@ paths:
             type: integer
             format: id
           example: 350
-      
+
       responses:
         "200":
           description: Запрос выполнен успешно. Возвращается количество подходящих объектов
@@ -307,22 +307,22 @@ paths:
               schema:
                 type: integer
                 example: 1
-          
+
         "400":
           description: Билет не найден
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: '#/components/schemas/ErrorMessage'
               examples:
                 response:
                   value:
                     code: "400"
                     message: "Validation Failed"
-      
+
   /ticket/start/comment:
     get:
-      tags: 
+      tags:
         - Additional task
       summary: Получить список билетов с комментариями, начинающимися с заданной подстроки
       description: Вернуть массив объектов, значение поля comment которых начинается с заданной подстроки.
@@ -343,19 +343,19 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TicketForResponse'
-                  
+
         "400":
           description: Билет не найден
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: '#/components/schemas/ErrorMessage'
               examples:
                 response:
                   value:
                     code: "400"
                     message: "Validation Failed"
-      
+
 components:
   schemas:
     TicketForComplexResponse:
@@ -381,7 +381,7 @@ components:
               description: id билета
               example: 1
         - $ref: '#/components/schemas/Ticket'
-      
+
     Ticket:
       type: object
       description: Экземпляр типа Ticket
@@ -392,8 +392,7 @@ components:
           description: Название билета
           example: Luntik 3D
         coordinates:
-          allOf:
-            - $ref: '#/components/schemas/Coordinates'
+          $ref: '#/components/schemas/Coordinates'
         price:
           type: integer
           minimum: 1
@@ -405,62 +404,66 @@ components:
           nullable: false
           example: строго 6+
         type:
-          allOf:
-            - description: Тип билета
-            - $ref: '#/components/schemas/TicketType'
+          $ref: '#/components/schemas/TicketType'
         person:
-          allOf:
-            - description: Владелец билета
-            - $ref: '#/components/schemas/Person'
-    
+          $ref: '#/components/schemas/Person'
+
     Person:
       type: object
-      description: Владелец билета 
+      description: Владелец билета
       properties:
         birthday:
           type: string
           format: date
           nullable: true
-          description: Дата рождения 
+          description: Дата рождения
         Color_E:
-          allOf:
-            - nullable: false
-            - $ref: '#/components/schemas/Color_E'
+          type: string
+          enum:
+            - RED
+            - BLUE
+            - ORANGE
+            - WHITE
         Color_H:
-          allOf:
-            - nullable: false
-            - $ref: '#/components/schemas/Color_H'
-          
+          type: string
+          enum:
+            - GREEN
+            - RED
+            - YELLOW
+            - WHITE
+
     Coordinates:
       type: object
       description: Координаты билета
       properties:
         x:
-          description: Координата по оси абцисс  
+          description: Координата по оси абцисс
           type: number
           nullable: false
         y:
-          description: Координата по оси ординат 
+          description: Координата по оси ординат
           type: integer
           maximum: 156
-        
-    Color_E:
-      type: string
-      description: Цвет глаз владельца билета
-      enum:
-        - RED
-        - BLUE
-        - ORANGE
-        - WHITE
-    Color_H:
-      type: string
-      description: Цвет волос владельца билета
-      enum:
-        - GREEN
-        - RED
-        - YELLOW
-        - WHITE
-        
+
+        # Color_E:
+        #   type: string
+        #   nullable: false
+        #   description: Цвет глаз владельца билета
+        #   enum:
+        #     - RED
+        #     - BLUE
+        #     - ORANGE
+        #     - WHITE
+        # Color_H:
+        #   type: string
+        #   nullable: false
+        #   description: Цвет волос владельца билета
+        #   enum:
+        #     - GREEN
+        #     - RED
+        #     - YELLOW
+        #     - WHITE
+
     TicketType:
       type: string
       description: Тип билета
@@ -469,14 +472,14 @@ components:
         - USUAL
         - BUDGETARY
         - CHEAP
-        
+
     ErrorMessage:
       type: object
       required:
         - code
         - message
       properties:
-        code: 
+        code:
           type: string
           nullable: false
         message:

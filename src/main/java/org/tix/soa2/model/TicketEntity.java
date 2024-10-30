@@ -4,21 +4,23 @@ import com.example.model.TicketType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @Entity
+@ToString
 @Table(name = "ticket_entity")
 public class TicketEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "name")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "coordinates_entity_id")
     private CoordinatesEntity coordinates;
 
@@ -31,7 +33,8 @@ public class TicketEntity {
     @Enumerated(EnumType.STRING)
     private TicketType type;
 
-    @OneToOne(orphanRemoval = true)
+    @OneToOne(orphanRemoval = true,
+            cascade = CascadeType.ALL)
     @JoinColumn(name = "person_entity_id")
     private PersonEntity person;
 

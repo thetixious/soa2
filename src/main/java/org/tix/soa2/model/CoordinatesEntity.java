@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Table(name = "coordinates_entity")
 public class CoordinatesEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
