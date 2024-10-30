@@ -8,11 +8,11 @@ import com.example.model.TicketForResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.tix.soa2.service.TicketsService;
 
 import java.util.List;
+
 
 @Controller
 @RequestMapping("/tickets")
@@ -24,40 +24,50 @@ public class TicketsApiController implements TicketsApi {
         this.ticketsService = ticketsService;
     }
 
+
     @Override
-    public ResponseEntity<List<TicketForComplexResponse>> ticketsGet(List<String> sort, List<String> filter, Integer page) {
+    public ResponseEntity<List<TicketForComplexResponse>> ticketsGet(List<String> sort, List<String> filter, Long page) {
         return TicketsApi.super.ticketsGet(sort, filter, page);
     }
 
+    @DeleteMapping("/{id}")
     @Override
-    public ResponseEntity<Void> ticketsIdDelete(Integer id) {
-        return TicketsApi.super.ticketsIdDelete(id);
+    public ResponseEntity<String> ticketsIdDelete(@PathVariable Long id) {
+        ticketsService.deleteTicketById(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Билет удален успешно");
+    }
+
+    @GetMapping("/{id}")
+    @Override
+    public ResponseEntity<TicketForResponse> ticketsIdGet(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(ticketsService.getTicketById(id));
     }
 
     @Override
-    public ResponseEntity<Void> ticketsIdGet(Integer id) {
-        return TicketsApi.super.ticketsIdGet(id);
-    }
-
-    @Override
-    public ResponseEntity<Void> ticketsIdPut(Integer id, Ticket ticket) {
+    public ResponseEntity<Void> ticketsIdPut(Long id, Ticket ticket) {
+        ticketsService.updateTicketsById(id,ticket);
         return TicketsApi.super.ticketsIdPut(id, ticket);
     }
-    @Override
+
     @PostMapping
-    public ResponseEntity<Void> ticketsPost(Ticket ticket) {
+    public ResponseEntity<String> ticketsPost(Ticket ticket) {
         ticketsService.createTicket(ticket);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body("Билет создан успешно");
     }
 
+    @DeleteMapping("/byPrice/{price}")
     @Override
-    public ResponseEntity<TicketForResponse> ticketsPriceDelete(Integer price) {
-        return TicketsApi.super.ticketsPriceDelete(price);
+    public ResponseEntity<TicketForResponse> ticketsByPricePriceDelete(@PathVariable Integer price) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(ticketsService.deleteTicketByPrice(price));
     }
 
+    @GetMapping("/byPrice/{price}")
     @Override
-    public ResponseEntity<Integer> ticketsPriceGet(Integer price) {
-        return TicketsApi.super.ticketsPriceGet(price);
+    public ResponseEntity<Integer> ticketsByPricePriceGet(@PathVariable Integer price) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(ticketsService.getCountOfTicketWithPrice(price));
     }
+
 
 }

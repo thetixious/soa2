@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.ZonedDateTime;
+
 @Getter
 @Setter
 @Entity
@@ -23,6 +25,9 @@ public class TicketEntity {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "coordinates_entity_id")
     private CoordinatesEntity coordinates;
+
+    @Column(name = "creation_date")
+    private ZonedDateTime creationDate;
 
     @Column(name = "price")
     private Integer price;

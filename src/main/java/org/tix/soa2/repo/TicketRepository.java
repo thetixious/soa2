@@ -9,7 +9,8 @@ import java.util.Optional;
 @Repository
 public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
 
-
+    Optional<TicketEntity> findByPrice(Integer price);
+    Optional<Integer> countAllByPrice(Integer price);
 
 
 }
