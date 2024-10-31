@@ -9,6 +9,8 @@ import org.tix.soa2.mapper.TicketMapper;
 import org.tix.soa2.model.TicketEntity;
 import org.tix.soa2.repo.TicketRepository;
 import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketsService {
@@ -52,7 +54,16 @@ public class TicketsService {
         return ticketRepository.countAllByPrice(price).orElseThrow();
 
     }
-
+    @Transactional
     public void updateTicketsById(Long id, Ticket ticket) {
+        TicketEntity oldTicketEntity = ticketRepository.findById(id).orElseThrow();
+        TicketEntity newTicketEntity = ticketMapper.toEntity(ticket);
+        newTicketEntity.setCreationDate(oldTicketEntity.getCreationDate());
+        ticketRepository.updateTicketEntity(id, newTicketEntity);
+
+    }
+
+    public List<TicketForResponse> getTicketThanStartWithComment(String commentStartsWith) {
+        return ticketRepository.findAll().stream().filter(ticketEntity -> ticketEntity.getComment().startsWith(commentStartsWith)).map(ticketForResponseMapper::toDTO).collect(Collectors.toList());
     }
 }

@@ -43,13 +43,22 @@ public class TicketsApiController implements TicketsApi {
         return ResponseEntity.status(HttpStatus.OK).body(ticketsService.getTicketById(id));
     }
 
+
+    @PutMapping("/{id}")
     @Override
-    public ResponseEntity<Void> ticketsIdPut(Long id, Ticket ticket) {
+    public ResponseEntity<String> ticketsIdPut(@PathVariable Long id, Ticket ticket) {
         ticketsService.updateTicketsById(id,ticket);
-        return TicketsApi.super.ticketsIdPut(id, ticket);
+        return ResponseEntity.status(HttpStatus.OK).body("Билет обновлен успешно");
+    }
+
+    @GetMapping("/start/comment")
+    @Override
+    public ResponseEntity<List<TicketForResponse>> ticketsStartCommentGet(@RequestParam(name = "commentStartsWith") String commentStartsWith) {
+        return ResponseEntity.status(HttpStatus.OK).body(ticketsService.getTicketThanStartWithComment(commentStartsWith));
     }
 
     @PostMapping
+    @Override
     public ResponseEntity<String> ticketsPost(Ticket ticket) {
         ticketsService.createTicket(ticket);
         return ResponseEntity.status(HttpStatus.OK).body("Билет создан успешно");
