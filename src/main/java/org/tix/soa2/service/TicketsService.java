@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tix.soa2.exception.customAdvice.TicketNotFoundException;
 import org.tix.soa2.mapper.TicketForComplexResponseMapper;
 import org.tix.soa2.mapper.TicketForResponseMapper;
 import org.tix.soa2.mapper.TicketMapper;
@@ -54,25 +55,25 @@ public class TicketsService {
     }
 
     public TicketForResponse getTicketById(Long id) {
-        return ticketForResponseMapper.toDTO(ticketRepository.findById(id).orElseThrow());
+        return ticketForResponseMapper.toDTO(ticketRepository.findById(id).orElseThrow(TicketNotFoundException::new));
     }
 
     @Transactional
     public TicketForResponse deleteTicketByPrice(Integer price) {
-        TicketEntity ticketEntity = ticketRepository.findByPrice(price).orElseThrow();
+        TicketEntity ticketEntity = ticketRepository.findByPrice(price).orElseThrow(TicketNotFoundException::new);
         ticketRepository.deleteById(ticketEntity.getId());
         return ticketForResponseMapper.toDTO(ticketEntity);
     }
 
 
     public Integer getCountOfTicketWithPrice(Integer price) {
-        return ticketRepository.countAllByPrice(price).orElseThrow();
+        return ticketRepository.countAllByPrice(price).orElseThrow(TicketNotFoundException::new);
 
     }
 
     @Transactional
     public void updateTicketsById(Long id, Ticket ticket) {
-        TicketEntity oldTicketEntity = ticketRepository.findById(id).orElseThrow();
+        TicketEntity oldTicketEntity = ticketRepository.findById(id).orElseThrow(TicketNotFoundException::new);
         TicketEntity newTicketEntity = ticketMapper.toEntity(ticket);
         newTicketEntity.setCreationDate(oldTicketEntity.getCreationDate());
         ticketRepository.updateTicketEntity(id, newTicketEntity);
@@ -84,6 +85,7 @@ public class TicketsService {
     }
 
     public List<TicketForComplexResponse> getFilteredAndSortedTickets(List<String> sortParams, List<String> filterParams, Long page) {
+
         Pageable pageable = PageRequest.of(page.intValue(), 10, getSort(sortParams));
         System.out.println(pageable);
         Specification<TicketEntity> specification = getSpecification(filterParams);
