@@ -465,32 +465,13 @@ components:
       description: Координаты билета
       properties:
         x:
-          description: Координата по оси абцисс
+          description: Координата по оси абсцисс
           type: number
           nullable: false
         y:
           description: Координата по оси ординат
           type: integer
           maximum: 156
-
-        # Color_E:
-        #   type: string
-        #   nullable: false
-        #   description: Цвет глаз владельца билета
-        #   enum:
-        #     - RED
-        #     - BLUE
-        #     - ORANGE
-        #     - WHITE
-        # Color_H:
-        #   type: string
-        #   nullable: false
-        #   description: Цвет волос владельца билета
-        #   enum:
-        #     - GREEN
-        #     - RED
-        #     - YELLOW
-        #     - WHITE
 
     TicketType:
       type: string

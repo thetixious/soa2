@@ -1,6 +1,7 @@
 package org.tix.soa2.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +11,7 @@ import org.tix.soa2.model.TicketEntity;
 import java.util.Optional;
 
 @Repository
-public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
+public interface TicketRepository extends JpaRepository<TicketEntity, Long>, JpaSpecificationExecutor<TicketEntity> {
 
     Optional<TicketEntity> findByPrice(Integer price);
     Optional<Integer> countAllByPrice(Integer price);

@@ -24,10 +24,15 @@ public class TicketsApiController implements TicketsApi {
         this.ticketsService = ticketsService;
     }
 
-
+    @GetMapping
     @Override
-    public ResponseEntity<List<TicketForComplexResponse>> ticketsGet(List<String> sort, List<String> filter, Long page) {
-        return TicketsApi.super.ticketsGet(sort, filter, page);
+    public ResponseEntity<List<TicketForComplexResponse>> ticketsGet(
+            @RequestParam List<String> sort,
+            @RequestParam List<String> filter,
+            @RequestParam(defaultValue = "0") Long page) {
+        List<TicketForComplexResponse> tickets = ticketsService.getFilteredAndSortedTickets(sort, filter, page);
+
+        return ResponseEntity.status(HttpStatus.OK).body(tickets);
     }
 
     @DeleteMapping("/{id}")
@@ -77,6 +82,7 @@ public class TicketsApiController implements TicketsApi {
 
         return ResponseEntity.status(HttpStatus.OK).body(ticketsService.getCountOfTicketWithPrice(price));
     }
+
 
 
 }
