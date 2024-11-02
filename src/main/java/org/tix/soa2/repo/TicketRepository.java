@@ -13,8 +13,8 @@ import java.util.Optional;
 @Repository
 public interface TicketRepository extends JpaRepository<TicketEntity, Long>, JpaSpecificationExecutor<TicketEntity> {
 
-    Optional<TicketEntity> findByPrice(Integer price);
-    Optional<Integer> countAllByPrice(Integer price);
+    Optional<TicketEntity> findByPrice(Double price);
+    Optional<Integer> countAllByPrice(Double price);
 
     @Modifying
     @Query(value = "UPDATE TicketEntity t SET t.name = :#{#new_ticket.name} , t.price = :#{#new_ticket.price}," +

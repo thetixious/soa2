@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.tix.soa2.model.DTO.TicketForUserDTO;
 import org.tix.soa2.service.TicketsService;
 
 import java.util.List;
@@ -69,16 +70,23 @@ public class TicketsApiController implements TicketsApi {
         return ResponseEntity.status(HttpStatus.OK).body("Билет создан успешно");
     }
 
+    @PostMapping("/person")
+    public ResponseEntity<String> ticketPostForPerson(@RequestBody TicketForUserDTO ticket){
+        System.out.println(ticket);
+        ticketsService.createTicketForPerson(ticket);
+        return ResponseEntity.status(HttpStatus.OK).body("Билет создан успешно");
+    }
+
     @DeleteMapping("/byPrice/{price}")
     @Override
-    public ResponseEntity<TicketForResponse> ticketsByPricePriceDelete(@PathVariable Integer price) {
+    public ResponseEntity<TicketForResponse> ticketsByPricePriceDelete(@PathVariable Double price) {
 
         return ResponseEntity.status(HttpStatus.OK).body(ticketsService.deleteTicketByPrice(price));
     }
 
     @GetMapping("/byPrice/{price}")
     @Override
-    public ResponseEntity<Integer> ticketsByPricePriceGet(@PathVariable Integer price) {
+    public ResponseEntity<Integer> ticketsByPricePriceGet(@PathVariable Double price) {
 
         return ResponseEntity.status(HttpStatus.OK).body(ticketsService.getCountOfTicketWithPrice(price));
     }

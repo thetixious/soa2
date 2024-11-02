@@ -3,6 +3,9 @@ package org.tix.soa2.service;
 import com.example.model.Ticket;
 import com.example.model.TicketForComplexResponse;
 import com.example.model.TicketForResponse;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,8 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tix.soa2.exception.customAdvice.TicketNotFoundException;
 import org.tix.soa2.mapper.TicketForComplexResponseMapper;
 import org.tix.soa2.mapper.TicketForResponseMapper;
+import org.tix.soa2.mapper.TicketForUserDTOMapper;
 import org.tix.soa2.mapper.TicketMapper;
+import org.tix.soa2.model.DTO.TicketForUserDTO;
+import org.tix.soa2.model.PersonEntity;
 import org.tix.soa2.model.TicketEntity;
+import org.tix.soa2.repo.PersonRepository;
 import org.tix.soa2.repo.TicketRepository;
 
 import java.time.ZonedDateTime;
@@ -29,12 +36,17 @@ public class TicketsService {
     private final TicketMapper ticketMapper;
     private final TicketForResponseMapper ticketForResponseMapper;
     private final TicketForComplexResponseMapper ticketForComplexResponseMapper;
+    private final PersonRepository personRepository;
+    private final TicketForUserDTOMapper ticketForUserDTOMapper;
 
-    public TicketsService(TicketRepository ticketRepository, TicketMapper ticketMapper, TicketForResponseMapper ticketForResponseMapper, TicketForComplexResponseMapper ticketForComplexResponseMapper) {
+    public TicketsService(TicketRepository ticketRepository, TicketMapper ticketMapper, TicketForResponseMapper ticketForResponseMapper, TicketForComplexResponseMapper ticketForComplexResponseMapper,
+                          PersonRepository personRepository, TicketForUserDTOMapper ticketForUserDTOMapper) {
         this.ticketRepository = ticketRepository;
         this.ticketMapper = ticketMapper;
         this.ticketForResponseMapper = ticketForResponseMapper;
         this.ticketForComplexResponseMapper = ticketForComplexResponseMapper;
+        this.personRepository = personRepository;
+        this.ticketForUserDTOMapper = ticketForUserDTOMapper;
     }
 
     public void createTicket(Ticket ticket) {
@@ -59,14 +71,14 @@ public class TicketsService {
     }
 
     @Transactional
-    public TicketForResponse deleteTicketByPrice(Integer price) {
+    public TicketForResponse deleteTicketByPrice(Double price) {
         TicketEntity ticketEntity = ticketRepository.findByPrice(price).orElseThrow(TicketNotFoundException::new);
         ticketRepository.deleteById(ticketEntity.getId());
         return ticketForResponseMapper.toDTO(ticketEntity);
     }
 
 
-    public Integer getCountOfTicketWithPrice(Integer price) {
+    public Integer getCountOfTicketWithPrice(Double price) {
         return ticketRepository.countAllByPrice(price).orElseThrow(TicketNotFoundException::new);
 
     }
@@ -92,7 +104,11 @@ public class TicketsService {
 
         Page<TicketEntity> ticketPage = ticketRepository.findAll(specification, pageable);
         return ticketPage.stream()
-                .map(ticketForComplexResponseMapper::toDTO)
+                .map(ticket -> {
+                    TicketForComplexResponse response = ticketForComplexResponseMapper.toDTO(ticket);
+                    response.setPageNumber((long) ticketPage.getNumber()); // Устанавливаем номер страницы
+                    return response;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -117,27 +133,36 @@ public class TicketsService {
                 String[] parts2 = parts[1].split("=");
                 String operator = parts2[0];
                 String value = parts2[1];
-
+                Path<?> path;
+                if (field.contains(".")) {
+                    // Обработка вложенных полей, таких как person.id
+                    String[] fieldParts = field.split("\\.");
+                    Join<Object, Object> join = root.join(fieldParts[0], JoinType.LEFT); // создаем join для вложенного объекта
+                    path = join.get(fieldParts[1]); // получаем вложенное поле
+                } else {
+                    // Для обычных полей без вложенности
+                    path = root.get(field);
+                }
 
                 switch (operator) {
                     case "gt":
-                        predicates.add(cb.greaterThan(root.get(field), value));
+                        predicates.add(cb.greaterThan(path.as(Long.class), Long.parseLong(value)));
                         break;
                     case "lt":
-                        predicates.add(cb.lessThan(root.get(field), value));
+                        predicates.add(cb.lessThan(path.as(Long.class), Long.parseLong(value)));
                         break;
                     case "eq":
-                        predicates.add(cb.equal(root.get(field), value));
+                        predicates.add(cb.equal(path, Long.parseLong(value)));
                         break;
                     case "ne":
-                        predicates.add(cb.notEqual(root.get(field), value));
+                        predicates.add(cb.notEqual(path, Long.parseLong(value)));
                         break;
                     case "gte":
-                        predicates.add(cb.greaterThanOrEqualTo(root.get(field),value));
+                        predicates.add(cb.greaterThanOrEqualTo(path.as(Long.class), Long.parseLong(value)));
                         break;
                     case "lte":
-                        predicates.add(cb.lessThanOrEqualTo(root.get(field),value));
-
+                        predicates.add(cb.lessThanOrEqualTo(path.as(Long.class), Long.parseLong(value)));
+                        break;
                 }
             }
 
@@ -146,4 +171,15 @@ public class TicketsService {
     }
 
 
+    public void createTicketForPerson(TicketForUserDTO ticket) {
+        System.out.println(ticket.getPersonId());
+        PersonEntity person = personRepository.findById(ticket.getPersonId()).orElseThrow(TicketNotFoundException::new);
+        TicketEntity ticketEntity = ticketForUserDTOMapper.toEntity(ticket,person);
+        if (ticketEntity.getCreationDate() == null) {
+            ticketEntity.setCreationDate(ZonedDateTime.now());
+        }
+        System.out.println(ticketEntity);
+        ticketRepository.save(ticketEntity);
+
+    }
 }

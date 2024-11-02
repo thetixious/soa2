@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.tix.soa2.exception.customAdvice.ExceptionDTO;
+import org.tix.soa2.exception.customAdvice.PersonNotFoundException;
 import org.tix.soa2.exception.customAdvice.TicketNotFoundException;
 import org.tix.soa2.exception.customAdvice.ValidationException;
 
@@ -43,6 +44,11 @@ public class ExceptionAdvice {
         String message = String.format("Required request parameter '%s' is missing", ex.getParameterName());
         ExceptionDTO exceptionDTO = new ExceptionDTO(HttpStatus.BAD_REQUEST, message);
         return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(PersonNotFoundException.class)
+    public ResponseEntity<ExceptionDTO> handlePersonNotFoundException(PersonNotFoundException exception){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(HttpStatus.NOT_FOUND, exception.getMessage());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.NOT_FOUND);
     }
 
 

@@ -280,8 +280,8 @@ paths:
           name: price
           required: true
           schema:
-            type: integer
-            format: id
+            type: number
+            format: double
           example: 350
 
       responses:
@@ -316,8 +316,8 @@ paths:
           name: price
           required: true
           schema:
-            type: integer
-            format: id
+            type: number
+            format: double
           example: 350
 
       responses:
@@ -422,7 +422,8 @@ components:
           nullable: true
           description: Дата создания
         price:
-          type: integer
+          type: number
+          format: double
           minimum: 1
           description: Цена билета
           example: 350

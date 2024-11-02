@@ -30,7 +30,7 @@ public class TicketEntity {
     private ZonedDateTime creationDate;
 
     @Column(name = "price")
-    private Integer price;
+    private Double price;
 
     @Column(name = "comment")
     private String comment;
@@ -38,7 +38,7 @@ public class TicketEntity {
     @Enumerated(EnumType.STRING)
     private TicketType type;
 
-    @OneToOne(orphanRemoval = true,
+    @ManyToOne(
             cascade = CascadeType.ALL)
     @JoinColumn(name = "person_entity_id")
     private PersonEntity person;
