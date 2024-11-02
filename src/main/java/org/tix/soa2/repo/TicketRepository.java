@@ -23,4 +23,13 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long>, Jpa
             "t.person = :#{#new_ticket.person} WHERE t.id = :id")
     void updateTicketEntity(@Param("id") Long id, @Param("new_ticket") TicketEntity newTicketEntity);
 
+    @Modifying
+    @Query("delete from TicketEntity t where t.person.id = ?1 ")
+    void deleteByPersonId(Long id);
+
+    @Modifying
+    @Query("delete from TicketEntity t where t.id = ?1")
+    void deleteByTicketId(Long id);
+
+
 }

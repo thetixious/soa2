@@ -3,6 +3,7 @@ package org.tix.soa2.service;
 import com.example.model.Ticket;
 import com.example.model.TicketForComplexResponse;
 import com.example.model.TicketForResponse;
+import com.example.model.TicketForUserDTO;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
@@ -19,7 +20,6 @@ import org.tix.soa2.mapper.TicketForComplexResponseMapper;
 import org.tix.soa2.mapper.TicketForResponseMapper;
 import org.tix.soa2.mapper.TicketForUserDTOMapper;
 import org.tix.soa2.mapper.TicketMapper;
-import org.tix.soa2.model.DTO.TicketForUserDTO;
 import org.tix.soa2.model.PersonEntity;
 import org.tix.soa2.model.TicketEntity;
 import org.tix.soa2.repo.PersonRepository;
@@ -57,12 +57,11 @@ public class TicketsService {
         ticketRepository.save(ticketEntity);
 
     }
-
+    @Transactional
     public void deleteTicketById(Long id) {
         if (ticketRepository.findById(id).isPresent()) {
-            ticketRepository.deleteById(id);
+            ticketRepository.deleteByTicketId(id);
         }
-        System.out.println("Ашибка");
 
     }
 
@@ -135,12 +134,11 @@ public class TicketsService {
                 String value = parts2[1];
                 Path<?> path;
                 if (field.contains(".")) {
-                    // Обработка вложенных полей, таких как person.id
+
                     String[] fieldParts = field.split("\\.");
                     Join<Object, Object> join = root.join(fieldParts[0], JoinType.LEFT); // создаем join для вложенного объекта
-                    path = join.get(fieldParts[1]); // получаем вложенное поле
+                    path = join.get(fieldParts[1]);
                 } else {
-                    // Для обычных полей без вложенности
                     path = root.get(field);
                 }
 
@@ -181,5 +179,9 @@ public class TicketsService {
         System.out.println(ticketEntity);
         ticketRepository.save(ticketEntity);
 
+    }
+    @Transactional
+    public void deleteTicketByPersonId(Long id) {
+        ticketRepository.deleteByPersonId(id);
     }
 }

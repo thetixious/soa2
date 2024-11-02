@@ -1,7 +1,7 @@
 package org.tix.soa2.mapper;
 
+import com.example.model.TicketForUserDTO;
 import org.springframework.stereotype.Component;
-import org.tix.soa2.model.DTO.TicketForUserDTO;
 import org.tix.soa2.model.PersonEntity;
 import org.tix.soa2.model.TicketEntity;
 
@@ -16,7 +16,7 @@ public class TicketForUserDTOMapper {
         TicketEntity ticketEntity = new TicketEntity();
         ticketEntity.setName(ticket.getName());
         ticketEntity.setPrice(ticket.getPrice());
-        ticketEntity.setType(ticket.getTicketType());
+        ticketEntity.setType(ticket.getType());
         ticketEntity.setComment(ticket.getComment());
         ticketEntity.setCoordinates(utilMapper.mapCoordinatesToCoordinatesEntity(ticket.getCoordinates()));
         ticketEntity.setPerson(person);

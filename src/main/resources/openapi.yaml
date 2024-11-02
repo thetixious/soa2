@@ -8,6 +8,9 @@ tags:
     description: Base set of CRUD operations with collection
   - name: Additional task
     description: Additional operations with collection
+  - name: Weirdo endpoints
+    description: Some closed for entire world endpoints with util service goal
+
 
 paths:
   /tickets:
@@ -377,8 +380,131 @@ paths:
                     code: "400"
                     message: "Validation Failed"
 
+
+  /tickets/person/{id}:
+    delete:
+      tags:
+        - Weirdo endpoints
+      summary: Удалить билет по person id
+      description: |
+        Удаление всех объектов Ticket с соотвествующим person id
+      parameters:
+        - description: Идентификатор элемента
+          in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 19
+      responses:
+        "200":
+          description: Удаление произошло успешно
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Ticket deleted successfully"
+        "400":
+          description: Ошибка во входных данных
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                response:
+                  value:
+                    code: "400"
+                    message: "Validation Failed"
+        "404":
+          description: Билет не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                response:
+                  value:
+                    code: "404"
+                    message: "Ticket not found"
+
+  /tickets/person:
+    post:
+      tags:
+        - Weirdo endpoints
+      summary: Создание билета для конкретного пользователя
+      description: |
+        Создание объекта Ticket с соотвествующим Person.id 
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketForUserDTO'
+      responses:
+        "200":
+          description: Удаление произошло успешно
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Ticket created successfully"
+        "400":
+          description: Ошибка во входных данных
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                response:
+                  value:
+                    code: "400"
+                    message: "Validation Failed"
+
+
+
 components:
   schemas:
+    TicketForUserDTO:
+      type: object
+      description: weirdo dto for weirdo endpoints
+      properties:
+        name:
+          type: string
+          nullable: false
+          description: Название билета
+          example: Luntik 3D
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        creationDate:
+          type: string
+          format: date
+          nullable: true
+          description: Дата создания
+        price:
+          type: number
+          format: double
+          minimum: 1
+          description: Цена билета
+          example: 350
+        comment:
+          description: Комментарий к билету
+          type: string
+          nullable: false
+          example: строго 6+
+        type:
+          $ref: '#/components/schemas/TicketType'
+        personId:
+          description: id для person
+          type: integer
+          format: int64
+          nullable: false
+          example: 12
+
+
+
+
+
     TicketForComplexResponse:
       type: object
       description: Расширенный экземпляр типа Ticket с добавленным полем id

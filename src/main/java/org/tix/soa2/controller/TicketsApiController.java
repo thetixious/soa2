@@ -5,11 +5,11 @@ import com.example.model.Ticket;
 import com.example.model.TicketForComplexResponse;
 import com.example.model.TicketForResponse;
 
+import com.example.model.TicketForUserDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.tix.soa2.model.DTO.TicketForUserDTO;
 import org.tix.soa2.service.TicketsService;
 
 import java.util.List;
@@ -53,7 +53,7 @@ public class TicketsApiController implements TicketsApi {
     @PutMapping("/{id}")
     @Override
     public ResponseEntity<String> ticketsIdPut(@PathVariable Long id, Ticket ticket) {
-        ticketsService.updateTicketsById(id,ticket);
+        ticketsService.updateTicketsById(id, ticket);
         return ResponseEntity.status(HttpStatus.OK).body("Билет обновлен успешно");
     }
 
@@ -70,12 +70,6 @@ public class TicketsApiController implements TicketsApi {
         return ResponseEntity.status(HttpStatus.OK).body("Билет создан успешно");
     }
 
-    @PostMapping("/person")
-    public ResponseEntity<String> ticketPostForPerson(@RequestBody TicketForUserDTO ticket){
-        System.out.println(ticket);
-        ticketsService.createTicketForPerson(ticket);
-        return ResponseEntity.status(HttpStatus.OK).body("Билет создан успешно");
-    }
 
     @DeleteMapping("/byPrice/{price}")
     @Override
@@ -91,6 +85,20 @@ public class TicketsApiController implements TicketsApi {
         return ResponseEntity.status(HttpStatus.OK).body(ticketsService.getCountOfTicketWithPrice(price));
     }
 
+    @DeleteMapping("/person/{id}")
+    @Override
+    public ResponseEntity<String> ticketsPersonIdDelete(Long id) {
+        ticketsService.deleteTicketByPersonId(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Ticket with person id = " + id + " have been deleted successfully");
+    }
+
+    @PostMapping("/person")
+    @Override
+    public ResponseEntity<String> ticketsPersonPost(TicketForUserDTO ticket) {
+        System.out.println(ticket);
+        ticketsService.createTicketForPerson(ticket);
+        return ResponseEntity.status(HttpStatus.OK).body("Билет создан успешно");
+    }
 
 
 }
