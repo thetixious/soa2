@@ -17,6 +17,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/tickets")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class TicketsApiController implements TicketsApi {
 
     private final TicketsService ticketsService;

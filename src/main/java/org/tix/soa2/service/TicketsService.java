@@ -57,11 +57,12 @@ public class TicketsService {
         ticketRepository.save(ticketEntity);
 
     }
+
     @Transactional
     public void deleteTicketById(Long id) {
-        if (ticketRepository.findById(id).isPresent()) {
-            ticketRepository.deleteByTicketId(id);
-        }
+
+        ticketRepository.deleteByTicketId(ticketRepository.findById(id).orElseThrow(TicketNotFoundException::new).getId());
+
 
     }
 
@@ -71,7 +72,7 @@ public class TicketsService {
 
     @Transactional
     public TicketForResponse deleteTicketByPrice(Double price) {
-        TicketEntity ticketEntity = ticketRepository.findByPrice(price).orElseThrow(TicketNotFoundException::new);
+        TicketEntity ticketEntity = ticketRepository.findFirstByPrice(price).orElseThrow(TicketNotFoundException::new);
         ticketRepository.deleteById(ticketEntity.getId());
         return ticketForResponseMapper.toDTO(ticketEntity);
     }
@@ -172,7 +173,7 @@ public class TicketsService {
     public void createTicketForPerson(TicketForUserDTO ticket) {
         System.out.println(ticket.getPersonId());
         PersonEntity person = personRepository.findById(ticket.getPersonId()).orElseThrow(TicketNotFoundException::new);
-        TicketEntity ticketEntity = ticketForUserDTOMapper.toEntity(ticket,person);
+        TicketEntity ticketEntity = ticketForUserDTOMapper.toEntity(ticket, person);
         if (ticketEntity.getCreationDate() == null) {
             ticketEntity.setCreationDate(ZonedDateTime.now());
         }
@@ -180,6 +181,7 @@ public class TicketsService {
         ticketRepository.save(ticketEntity);
 
     }
+
     @Transactional
     public void deleteTicketByPersonId(Long id) {
         ticketRepository.deleteByPersonId(id);

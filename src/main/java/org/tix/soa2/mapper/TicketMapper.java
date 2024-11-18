@@ -29,6 +29,7 @@ public class TicketMapper {
         ticketEntity.setPrice(ticket.getPrice());
         ticketEntity.setType(ticket.getType());
         ticketEntity.setComment(ticket.getComment());
+        System.out.println(ticket.getCoordinates().getX());
         ticketEntity.setCoordinates(utilMapper.mapCoordinatesToCoordinatesEntity(ticket.getCoordinates()));
         ticketEntity.setPerson(utilMapper.mapPersonToPersonEntity(ticket.getPerson()));
         return ticketEntity;

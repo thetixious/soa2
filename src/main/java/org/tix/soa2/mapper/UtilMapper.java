@@ -20,6 +20,7 @@ public class UtilMapper {
     public CoordinatesEntity mapCoordinatesToCoordinatesEntity(Coordinates coordinates){
         CoordinatesEntity coordinatesEntity = new CoordinatesEntity();
         coordinatesEntity.setX(coordinates.getX());
+        System.out.println(coordinates.getX());
         coordinatesEntity.setY(coordinates.getY());
         return coordinatesRepo.save(coordinatesEntity);
     }

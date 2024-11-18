@@ -549,7 +549,6 @@ components:
           description: Дата создания
         price:
           type: number
-          format: double
           minimum: 1
           description: Цена билета
           example: 350

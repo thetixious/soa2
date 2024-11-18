@@ -32,4 +32,5 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long>, Jpa
     void deleteByTicketId(Long id);
 
 
+    Optional<TicketEntity> findFirstByPrice(Double price);
 }

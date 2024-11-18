@@ -18,6 +18,7 @@ public class TicketForComplexResponseMapper {
     public TicketForComplexResponse toDTO(TicketEntity ticketEntity){
         TicketForComplexResponse ticketForComplexResponse = new TicketForComplexResponse();
         ticketForComplexResponse.setId(ticketEntity.getId());
+        ticketForComplexResponse.setName(ticketEntity.getName());
         ticketForComplexResponse.setCreationDate(LocalDate.from(ticketEntity.getCreationDate()));
         ticketForComplexResponse.setComment(ticketEntity.getComment());
         ticketForComplexResponse.setCoordinates(utilMapper.mapCoordinatesEntityToCoordinates(ticketEntity.getCoordinates()));
