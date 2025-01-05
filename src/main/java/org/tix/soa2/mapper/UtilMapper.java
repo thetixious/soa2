@@ -7,6 +7,8 @@ import org.tix.soa2.model.CoordinatesEntity;
 import org.tix.soa2.model.PersonEntity;
 import org.tix.soa2.repo.CoordinatesRepo;
 import org.tix.soa2.repo.PersonRepository;
+
+
 @Component
 public class UtilMapper {
     private final CoordinatesRepo coordinatesRepo;
@@ -43,6 +45,8 @@ public class UtilMapper {
         person.setBirthday(personEntity.getBirthday());
         person.setColorE(personEntity.getColorE());
         person.setColorH(personEntity.getColorH());
+        
         return person;
+
     }
 }

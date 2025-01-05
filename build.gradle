@@ -19,6 +19,15 @@ configurations {
         extendsFrom annotationProcessor
     }
 }
+bootJar {
+    archiveFileName = 'my-spring-boot-app_soa.jar' // Имя JAR-файла
+}
+
+tasks {
+    bootJar {
+        launchScript()
+    }
+}
 
 repositories {
     mavenCentral()
@@ -38,6 +47,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
     compileOnly 'org.projectlombok:lombok'
     compileOnly 'javax.servlet:javax.servlet-api:3.0.1'
@@ -56,12 +66,21 @@ openApiGenerate {
     outputDir = "$buildDir/generated"
     apiPackage = "com.example.api"
     modelPackage = "com.example.model"
+    globalProperties = [
+            modelDocs: 'false'
+    ]
+    typeMappings = [
+            'OffsetDateTime': 'java.time.ZonedDateTime'
+    ]
+    importMappings = [
+            'OffsetDateTime': 'java.time.ZonedDateTime'
+    ]
     configOptions = [
             interfaceOnly: 'true',
             dateLibrary: 'java8',
             stringEnums: 'true',
             enumNameSuffix: 'null',
-            "openApiNullable": 'false'
+            "openApiNullable": 'false',
 
     ]
 }

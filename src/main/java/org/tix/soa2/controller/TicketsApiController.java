@@ -33,7 +33,6 @@ public class TicketsApiController implements TicketsApi {
             @RequestParam List<String> filter,
             @RequestParam(defaultValue = "0") Long page) {
         List<TicketForComplexResponse> tickets = ticketsService.getFilteredAndSortedTickets(sort, filter, page);
-
         return ResponseEntity.status(HttpStatus.OK).body(tickets);
     }
 
@@ -74,21 +73,21 @@ public class TicketsApiController implements TicketsApi {
 
     @DeleteMapping("/byPrice/{price}")
     @Override
-    public ResponseEntity<TicketForResponse> ticketsByPricePriceDelete(@PathVariable Double price) {
+    public ResponseEntity<TicketForResponse> ticketsByPricePriceDelete(@PathVariable Float price) {
 
         return ResponseEntity.status(HttpStatus.OK).body(ticketsService.deleteTicketByPrice(price));
     }
 
     @GetMapping("/byPrice/{price}")
     @Override
-    public ResponseEntity<Integer> ticketsByPricePriceGet(@PathVariable Double price) {
+    public ResponseEntity<Integer> ticketsByPricePriceGet(@PathVariable Float price) {
 
         return ResponseEntity.status(HttpStatus.OK).body(ticketsService.getCountOfTicketWithPrice(price));
     }
 
     @DeleteMapping("/person/{id}")
     @Override
-    public ResponseEntity<String> ticketsPersonIdDelete(Long id) {
+    public ResponseEntity<String> ticketsPersonIdDelete(@PathVariable Long id) {
         ticketsService.deleteTicketByPersonId(id);
         return ResponseEntity.status(HttpStatus.OK).body("Ticket with person id = " + id + " have been deleted successfully");
     }

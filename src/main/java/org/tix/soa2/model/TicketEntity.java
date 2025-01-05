@@ -30,7 +30,7 @@ public class TicketEntity {
     private ZonedDateTime creationDate;
 
     @Column(name = "price")
-    private Double price;
+    private float price;
 
     @Column(name = "comment")
     private String comment;

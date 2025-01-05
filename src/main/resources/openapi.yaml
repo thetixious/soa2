@@ -284,7 +284,7 @@ paths:
           required: true
           schema:
             type: number
-            format: double
+            format: float
           example: 350
 
       responses:
@@ -320,7 +320,7 @@ paths:
           required: true
           schema:
             type: number
-            format: double
+            format: float
           example: 350
 
       responses:
@@ -478,12 +478,13 @@ components:
           $ref: '#/components/schemas/Coordinates'
         creationDate:
           type: string
-          format: date
+          format: date-time
+          x-java-type: java.time.ZonedDateTime
           nullable: true
           description: Дата создания
         price:
           type: number
-          format: double
+          format: float
           minimum: 1
           description: Цена билета
           example: 350
@@ -544,11 +545,13 @@ components:
           $ref: '#/components/schemas/Coordinates'
         creationDate:
           type: string
-          format: date
+          format: date-time
+          x-java-type: java.time.ZonedDateTime
           nullable: true
           description: Дата создания
         price:
           type: number
+          format: float
           minimum: 1
           description: Цена билета
           example: 350
@@ -593,6 +596,7 @@ components:
         x:
           description: Координата по оси абсцисс
           type: number
+          format: double
           nullable: false
         y:
           description: Координата по оси ординат

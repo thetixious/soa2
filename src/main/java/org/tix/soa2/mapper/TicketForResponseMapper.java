@@ -4,7 +4,6 @@ import com.example.model.TicketForResponse;
 import org.springframework.stereotype.Component;
 import org.tix.soa2.model.TicketEntity;
 
-import java.time.LocalDate;
 
 @Component
 public class TicketForResponseMapper {
@@ -24,7 +23,7 @@ public class TicketForResponseMapper {
         ticketForResponse.setName(ticketEntity.getName());
         ticketForResponse.setType(ticketEntity.getType());
         ticketForResponse.setPrice(ticketEntity.getPrice());
-        ticketForResponse.setCreationDate(LocalDate.from(ticketEntity.getCreationDate()));
+        ticketForResponse.setCreationDate(ticketEntity.getCreationDate());
         return ticketForResponse;
     }
 

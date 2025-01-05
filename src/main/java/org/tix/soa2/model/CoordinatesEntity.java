@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -17,7 +16,7 @@ public class CoordinatesEntity {
     private Long id;
 
     @Column(name = "x")
-    private BigDecimal x;
+    private double x;
 
     @Column(name = "y")
     private Integer y;

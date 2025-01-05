@@ -4,10 +4,7 @@ import com.example.model.Ticket;
 import com.example.model.TicketForComplexResponse;
 import com.example.model.TicketForResponse;
 import com.example.model.TicketForUserDTO;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +23,6 @@ import org.tix.soa2.repo.PersonRepository;
 import org.tix.soa2.repo.TicketRepository;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +50,7 @@ public class TicketsService {
         if (ticketEntity.getCreationDate() == null) {
             ticketEntity.setCreationDate(ZonedDateTime.now());
         }
+        System.out.println(ticketEntity.getCreationDate());
         ticketRepository.save(ticketEntity);
 
     }
@@ -71,14 +68,14 @@ public class TicketsService {
     }
 
     @Transactional
-    public TicketForResponse deleteTicketByPrice(Double price) {
+    public TicketForResponse deleteTicketByPrice(Float price) {
         TicketEntity ticketEntity = ticketRepository.findFirstByPrice(price).orElseThrow(TicketNotFoundException::new);
         ticketRepository.deleteById(ticketEntity.getId());
         return ticketForResponseMapper.toDTO(ticketEntity);
     }
 
 
-    public Integer getCountOfTicketWithPrice(Double price) {
+    public Integer getCountOfTicketWithPrice(Float price) {
         return ticketRepository.countAllByPrice(price).orElseThrow(TicketNotFoundException::new);
 
     }
@@ -98,76 +95,87 @@ public class TicketsService {
 
     public List<TicketForComplexResponse> getFilteredAndSortedTickets(List<String> sortParams, List<String> filterParams, Long page) {
 
-        Pageable pageable = PageRequest.of(page.intValue(), 10, getSort(sortParams));
-        System.out.println(pageable);
-        Specification<TicketEntity> specification = getSpecification(filterParams);
+        Sort sort = parseSortParameters(sortParams);
 
-        Page<TicketEntity> ticketPage = ticketRepository.findAll(specification, pageable);
-        return ticketPage.stream()
+        Specification<TicketEntity> filterSpecification = parseFilterParameters(filterParams);
+
+        Pageable pageable = PageRequest.of(page.intValue(), 10, sort);
+
+        Page<TicketEntity> ticketsPage = ticketRepository.findAll(filterSpecification, pageable);
+
+        return ticketsPage.stream()
                 .map(ticket -> {
                     TicketForComplexResponse response = ticketForComplexResponseMapper.toDTO(ticket);
-                    response.setPageNumber((long) ticketPage.getNumber()); // Устанавливаем номер страницы
+                    response.setPageNumber((long) ticketsPage.getNumber()); // Устанавливаем номер страницы
                     return response;
                 })
                 .collect(Collectors.toList());
     }
 
-    private Sort getSort(List<String> sortParams) {
-        List<Sort.Order> orders = new ArrayList<>();
-        for (String param : sortParams) {
-            String[] parts = param.split("_");
-            if (parts.length == 2) {
-                Sort.Direction direction = "asc".equalsIgnoreCase(parts[1]) ? Sort.Direction.ASC : Sort.Direction.DESC;
-                orders.add(new Sort.Order(direction, parts[0]));
-            }
+    private Sort parseSortParameters(List<String> sortParams) {
+        if (sortParams == null || sortParams.isEmpty()) {
+            return Sort.unsorted();
         }
+
+        List<Sort.Order> orders = sortParams.stream().map(param -> {
+            boolean isAsc = param.endsWith("_asc");
+            String field = param.replace("_asc", "").replace("_des", "");
+            return new Sort.Order(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC, field);
+        }).collect(Collectors.toList());
+
         return Sort.by(orders);
     }
 
-    private Specification<TicketEntity> getSpecification(List<String> filterParams) {
-        return (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            for (String filter : filterParams) {
-                String[] parts = filter.split("_");
-                String field = parts[0];
-                String[] parts2 = parts[1].split("=");
-                String operator = parts2[0];
-                String value = parts2[1];
-                Path<?> path;
-                if (field.contains(".")) {
+    private Specification<TicketEntity> parseFilterParameters(List<String> filterParams) {
+        if (filterParams == null || filterParams.isEmpty()) {
+            return Specification.where(null);
+        }
 
-                    String[] fieldParts = field.split("\\.");
-                    Join<Object, Object> join = root.join(fieldParts[0], JoinType.LEFT); // создаем join для вложенного объекта
-                    path = join.get(fieldParts[1]);
-                } else {
-                    path = root.get(field);
-                }
+        return filterParams.stream()
+                .map(this::createFilterSpecification)
+                .reduce(Specification::and)
+                .orElse(Specification.where(null));
+    }
 
-                switch (operator) {
-                    case "gt":
-                        predicates.add(cb.greaterThan(path.as(Long.class), Long.parseLong(value)));
-                        break;
-                    case "lt":
-                        predicates.add(cb.lessThan(path.as(Long.class), Long.parseLong(value)));
-                        break;
-                    case "eq":
-                        predicates.add(cb.equal(path, Long.parseLong(value)));
-                        break;
-                    case "ne":
-                        predicates.add(cb.notEqual(path, Long.parseLong(value)));
-                        break;
-                    case "gte":
-                        predicates.add(cb.greaterThanOrEqualTo(path.as(Long.class), Long.parseLong(value)));
-                        break;
-                    case "lte":
-                        predicates.add(cb.lessThanOrEqualTo(path.as(Long.class), Long.parseLong(value)));
-                        break;
-                }
-            }
+    private Specification<TicketEntity> createFilterSpecification(String filter) {
 
-            return cb.and(predicates.toArray(new Predicate[0]));
+
+        int lastUnderscoreBeforeEquals = filter.substring(0, filter.indexOf('=')).lastIndexOf('_');
+
+        String field = filter.substring(0, lastUnderscoreBeforeEquals);           // "person.Color_E"
+        String operation = filter.substring(lastUnderscoreBeforeEquals + 1, filter.indexOf('=')); // "eq"
+        String value = filter.substring(filter.indexOf('=') + 1);
+
+
+        System.out.println(field);
+        System.out.println(operation);
+        System.out.println(value);
+        return (root, query, criteriaBuilder) -> {
+            Path<Object> path = getPath(root, field);
+            return switch (operation) {
+                case "eq" -> criteriaBuilder.equal(path, value);
+                case "ne" -> criteriaBuilder.notEqual(path, value);
+                case "gt" -> criteriaBuilder.greaterThan(path.as(String.class), value);
+                case "lt" -> criteriaBuilder.lessThan(path.as(String.class), value);
+                case "gte" -> criteriaBuilder.greaterThanOrEqualTo(path.as(String.class), value);
+                case "lte" -> criteriaBuilder.lessThanOrEqualTo(path.as(String.class), value);
+                default -> throw new IllegalArgumentException("Unsupported operation: " + operation);
+            };
         };
     }
+
+    private Path<Object> getPath(Root<TicketEntity> root, String field) {
+        if (field.contains(".")) {
+            String[] parts = field.split("\\.");
+            Path<Object> path = root.get(parts[0]);
+            for (int i = 1; i < parts.length; i++) {
+                path = path.get(parts[i]);
+            }
+            return path;
+        }
+        return root.get(field);
+    }
+
 
 
     public void createTicketForPerson(TicketForUserDTO ticket) {
@@ -184,6 +192,12 @@ public class TicketsService {
 
     @Transactional
     public void deleteTicketByPersonId(Long id) {
-        ticketRepository.deleteByPersonId(id);
+        List<TicketEntity> list;
+        list = ticketRepository.findAllByPersonId(id);
+        System.out.println(list);
+        if (list.isEmpty())
+            throw new TicketNotFoundException();
+        ticketRepository.deleteAll(list);
+
     }
 }
