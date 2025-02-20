@@ -41,6 +41,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'io.swagger.codegen.v3:swagger-codegen:3.0.56'
+
     implementation 'org.mapstruct:mapstruct:1.5.3.Final'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'io.swagger.core.v3:swagger-annotations:2.2.19'
@@ -48,13 +49,11 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-core:2.15.4'
     implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.cloud:spring-cloud-starter'
-    implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
+    implementation 'org.projectlombok:lombok:1.18.30'
     testImplementation 'org.springframework.security:spring-security-test'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-
     compileOnly 'org.projectlombok:lombok'
     compileOnly 'javax.servlet:javax.servlet-api:3.0.1'
     runtimeOnly 'org.postgresql:postgresql'
@@ -65,6 +64,7 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+
 }
 openApiGenerate {
     generatorName = "spring"
